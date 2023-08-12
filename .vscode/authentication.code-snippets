@@ -1,0 +1,68 @@
+/**
+	Snippets used for credential files
+	Header Auth - auth header
+	Query String - auth qs
+	Basic Auth - auth basic
+	Credential Test - cred test
+*/
+{
+	"Authentication Header": {
+		"scope": "javascript, typescript",
+		"prefix": ["auth header"],
+		"body": [
+			"authenticate: IAuthenticateGeneric = {",
+			"\ttype: 'generic',",
+			"\tproperties: {",
+			"\t\theaders: {",
+			"\t\t\tAuthorization: '=Bearer {{\\$credentials.VALUE}}',",
+			"\t\t},",
+			"\t},",
+			"};",
+		],
+		"description": "Adds generic header authenticate type",
+	},
+	"Authentication QS": {
+		"scope": "javascript, typescript",
+		"prefix": ["auth qs"],
+		"body": [
+			"authenticate: IAuthenticateGeneric = {",
+			"\ttype: 'generic',",
+			"\tproperties: {",
+			"\t\tqs: {",
+			"\t\t\tNAME: '={{\\$credentials.VALUE}}',",
+			"\t\t},",
+			"\t},",
+			"};",
+		],
+		"description": "Adds g eneric QS authenticate type",
+	},
+	"Authentication Basic": {
+		"scope": "javascript, typescript",
+		"prefix": ["auth basic"],
+		"body": [
+			"authenticate: IAuthenticateGeneric = {",
+			"\ttype: 'generic',",
+			"\tproperties: {",
+			"\t\tauth: {",
+			"\t\t\tusername: '={{\\$credentials.username}}',",
+			"\t\t\tpassword: '={{\\$credentials.password}}',",
+			"\t\t},",
+			"\t},",
+			"};",
+		],
+		"description": "Adds generic (Basic) Auth authenticate type",
+	},
+	"Credential Test": {
+		"scope": "javascript, typescript",
+		"prefix": ["cred test"],
+		"body": [
+			"test: ICredentialTestRequest = {",
+			"\trequest: {",
+			"\t\tbaseURL: '={{\\$credentials.host}}',",
+			"\t\turl: '/uri/to/use',",
+			"\t},",
+			"};",
+		],
+		"description": "Adds Credential Test",
+	}
+}
