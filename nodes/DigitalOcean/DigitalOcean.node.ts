@@ -11,7 +11,13 @@ import type {
 import { NodeOperationError } from 'n8n-workflow';
 
 import { digitalOceanApiRequest, digitalOceanApiRequestAllItems } from './GenericFunctions';
-import { accountDescription, dropletDescription, dropletFields } from './Descriptions';
+import {
+	accountDescription,
+	actionDescription,
+	actionFields,
+	dropletDescription,
+	dropletFields
+} from './Descriptions';
 
 export class DigitalOcean implements INodeType {
 	description: INodeTypeDescription = {
@@ -74,6 +80,10 @@ export class DigitalOcean implements INodeType {
 						value: 'account',
 					},
 					{
+						name: 'Action',
+						value: 'action',
+					},
+					{
 						name: 'Droplet',
 						value: 'droplet',
 					},
@@ -81,6 +91,8 @@ export class DigitalOcean implements INodeType {
 				default: 'account',
 			},
 			...accountDescription,
+			...actionDescription,
+			...actionFields,
 			...dropletDescription,
 			...dropletFields,
 		],
@@ -224,6 +236,34 @@ export class DigitalOcean implements INodeType {
 						responseData = await digitalOceanApiRequest.call(this, 'GET', 'account');
 						responseData = responseData.account;
 					}
+				}
+
+				if (resource === 'action') {
+					if (operation === 'get') {
+						const actionId = this.getNodeParameter('actionId', itemIndex) as number;
+
+						responseData = await digitalOceanApiRequest.call(this, 'GET', `actions/${actionId}`);
+						responseData = responseData.action;
+					}
+					if (operation === 'getMany') {
+						const returnAll = this.getNodeParameter('returnAll', itemIndex) as boolean;
+						const qs: IDataObject = {};
+
+						if (returnAll) {
+							responseData = await digitalOceanApiRequestAllItems.call(this, 'actions', 'GET', 'actions', {}, qs);
+						} else {
+							const limit = this.getNodeParameter('limit', itemIndex) as number;
+							qs.limit = limit;
+							// Allow more than the 200 items default limit
+							if (limit >= 200) {
+								responseData = await digitalOceanApiRequestAllItems.call(this, 'actions', 'GET', 'actions', {}, qs);
+							} else {
+								responseData = await digitalOceanApiRequest.call(this, 'GET', 'actions', {}, qs);
+								responseData = responseData.actions;
+							}
+						}
+					}
+
 				}
 
 				if (resource === 'droplet') {

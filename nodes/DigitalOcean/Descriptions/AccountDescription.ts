@@ -22,4 +22,3 @@ export const accountDescription: INodeProperties[] = [
 		default: 'get',
 	},
 ];
-
