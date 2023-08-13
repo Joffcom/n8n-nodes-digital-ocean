@@ -11,7 +11,15 @@ import type {
 import { NodeOperationError } from 'n8n-workflow';
 
 import { digitalOceanApiRequest, digitalOceanApiRequestAllItems } from './GenericFunctions';
-import { accountDescription, dropletDescription, dropletFields } from './Descriptions';
+import {
+	accountDescription,
+	eventDescription,
+	eventFields,
+	domainDescription,
+	domainFields,
+	dropletDescription,
+	dropletFields
+} from './Descriptions';
 
 export class DigitalOcean implements INodeType {
 	description: INodeTypeDescription = {
@@ -74,13 +82,25 @@ export class DigitalOcean implements INodeType {
 						value: 'account',
 					},
 					{
+						name: 'Domain',
+						value: 'domain',
+					},
+					{
 						name: 'Droplet',
 						value: 'droplet',
+					},
+					{
+						name: 'Event',
+						value: 'event',
 					},
 				],
 				default: 'account',
 			},
 			...accountDescription,
+			...eventDescription,
+			...eventFields,
+			...domainDescription,
+			...domainFields,
 			...dropletDescription,
 			...dropletFields,
 		],
@@ -106,9 +126,25 @@ export class DigitalOcean implements INodeType {
 				return returnData;
 			},
 			// Get Images
-			async getImages(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+			async getDistributionImages(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 				const returnData: INodePropertyOptions[] = [];
 				const dropletImages = await digitalOceanApiRequestAllItems.call(this, 'images', 'GET', 'images?type=distribution');
+
+				for (const dropletImage of dropletImages) {
+					const dropletImageName = dropletImage.name;
+					const dropletImageId = dropletImage.id;
+
+					returnData.push({
+						name: dropletImageName,
+						value: dropletImageId,
+					});
+				}
+
+				return returnData;
+			},
+			async getAppImages(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				const dropletImages = await digitalOceanApiRequestAllItems.call(this, 'images', 'GET', 'images?type=application');
 
 				for (const dropletImage of dropletImages) {
 					const dropletImageName = dropletImage.name;
@@ -210,7 +246,102 @@ export class DigitalOcean implements INodeType {
 					}
 				}
 
+				if (resource === 'event') {
+					if (operation === 'get') {
+						const actionId = this.getNodeParameter('eventId', itemIndex) as number;
+
+						responseData = await digitalOceanApiRequest.call(this, 'GET', `actions/${actionId}`);
+						responseData = responseData.action;
+					}
+					if (operation === 'getMany') {
+						const returnAll = this.getNodeParameter('returnAll', itemIndex) as boolean;
+						const qs: IDataObject = {};
+
+						if (returnAll) {
+							responseData = await digitalOceanApiRequestAllItems.call(this, 'actions', 'GET', 'actions', {}, qs);
+						} else {
+							const limit = this.getNodeParameter('limit', itemIndex) as number;
+							qs.limit = limit;
+							// Allow more than the 200 items default limit
+							if (limit >= 200) {
+								responseData = await digitalOceanApiRequestAllItems.call(this, 'actions', 'GET', 'actions', {}, qs);
+							} else {
+								responseData = await digitalOceanApiRequest.call(this, 'GET', 'actions', {}, qs);
+								responseData = responseData.actions;
+							}
+						}
+					}
+
+				}
+
+				if (resource === 'domain') {
+					if (operation === 'get') {
+						const domainName = this.getNodeParameter('domainName', itemIndex) as number;
+
+						responseData = await digitalOceanApiRequest.call(this, 'GET', `domains/${domainName}`);
+						responseData = responseData.domain;
+					}
+					if (operation === 'getMany') {
+						const returnAll = this.getNodeParameter('returnAll', itemIndex) as boolean;
+						const qs: IDataObject = {};
+
+						if (returnAll) {
+							responseData = await digitalOceanApiRequestAllItems.call(this, 'domains', 'GET', 'domains', {}, qs);
+						} else {
+							const limit = this.getNodeParameter('limit', itemIndex) as number;
+							qs.limit = limit;
+							// Allow more than the 200 items default limit
+							if (limit >= 200) {
+								responseData = await digitalOceanApiRequestAllItems.call(this, 'domains', 'GET', 'domains', {}, qs);
+							} else {
+								responseData = await digitalOceanApiRequest.call(this, 'GET', 'domains', {}, qs);
+								responseData = responseData.domains;
+							}
+						}
+					}
+					if (operation === 'delete') {
+						const domainName = this.getNodeParameter('domainName', itemIndex) as number;
+
+						responseData = await digitalOceanApiRequest.call(this, 'DELETE', `domains/${domainName}`);
+						responseData = { success: true };
+					}
+					if (operation === 'create') {
+						const domainName = this.getNodeParameter('domainName', itemIndex) as number;
+						const ipAddress = this.getNodeParameter('ipAddress', itemIndex) as number;
+
+						const body: IDataObject = {
+							name: domainName,
+							ip_address: ipAddress,
+						};
+
+						responseData = await digitalOceanApiRequest.call(this, 'POST', `domains`, body);
+						responseData = responseData.domain
+					}
+
+				}
+
 				if (resource === 'droplet') {
+					if (operation === 'action') {
+						const dropletId = this.getNodeParameter('dropletId', itemIndex) as number;
+						const action = this.getNodeParameter('action', itemIndex) as string;
+
+						const body: IDataObject = {
+							type: action,
+						};
+
+						if (action === 'snapshot') {
+							const snapshotName = this.getNodeParameter('snapshotName', itemIndex) as string;
+							body.name = snapshotName;
+						}
+
+						if (action === 'rename') {
+							const name = this.getNodeParameter('dropletName', itemIndex) as string;
+							body.name = name;
+						}
+
+						responseData = await digitalOceanApiRequest.call(this, 'POST', `droplets/${dropletId}/actions`, body);
+						responseData = responseData.action;
+					}
 					if (operation === 'get') {
 						const dropletId = this.getNodeParameter('dropletId', itemIndex) as number;
 
@@ -250,6 +381,45 @@ export class DigitalOcean implements INodeType {
 							}
 						}
 					}
+					if (operation === 'getBackups') {
+						const returnAll = this.getNodeParameter('returnAll', itemIndex) as boolean;
+						const dropletId = this.getNodeParameter('dropletId', itemIndex) as number;
+						const qs: IDataObject = {};
+
+						if (returnAll) {
+							responseData = await digitalOceanApiRequestAllItems.call(this, 'backups', 'GET', `droplets/${dropletId}/backups`, {}, qs);
+						} else {
+							const limit = this.getNodeParameter('limit', itemIndex) as number;
+							qs.limit = limit;
+							// Allow more than the 200 items default limit
+							if (limit >= 200) {
+								responseData = await digitalOceanApiRequestAllItems.call(this, 'backups', 'GET', `droplets/${dropletId}/backups`, {}, qs);
+							} else {
+								responseData = await digitalOceanApiRequest.call(this, 'GET', `droplets/${dropletId}/backups`, {}, qs);
+								responseData = responseData.backups;
+							}
+						}
+					}
+
+					if (operation === 'getSnapshots') {
+						const returnAll = this.getNodeParameter('returnAll', itemIndex) as boolean;
+						const dropletId = this.getNodeParameter('dropletId', itemIndex) as number;
+						const qs: IDataObject = {};
+
+						if (returnAll) {
+							responseData = await digitalOceanApiRequestAllItems.call(this, 'snapshots', 'GET', `droplets/${dropletId}/snapshots`, {}, qs);
+						} else {
+							const limit = this.getNodeParameter('limit', itemIndex) as number;
+							qs.limit = limit;
+							// Allow more than the 200 items default limit
+							if (limit >= 200) {
+								responseData = await digitalOceanApiRequestAllItems.call(this, 'snapshots', 'GET', `droplets/${dropletId}/snapshots`, {}, qs);
+							} else {
+								responseData = await digitalOceanApiRequest.call(this, 'GET', `droplets/${dropletId}/snapshots`, {}, qs);
+								responseData = responseData.snapshots;
+							}
+						}
+					}
 
 					if (operation === 'delete') {
 						const dropletId = this.getNodeParameter('dropletId', itemIndex) as number;
@@ -260,8 +430,15 @@ export class DigitalOcean implements INodeType {
 					if (operation === 'create') {
 						const name = this.getNodeParameter('name', itemIndex) as string;
 						const size = this.getNodeParameter('size', itemIndex) as string;
-						const image = this.getNodeParameter('image', itemIndex) as string;
+						const useApplicationImage = this.getNodeParameter('useApplicationImage', itemIndex) as boolean;
 						const additionalFields = this.getNodeParameter('additionalFields', itemIndex) as IDataObject;
+
+						let image = '';
+						if (useApplicationImage) {
+							image = this.getNodeParameter('applicationImage', itemIndex) as string;
+						} else {
+							image = this.getNodeParameter('image', itemIndex) as string;
+						}
 
 						const body: IDataObject = {
 							name,
