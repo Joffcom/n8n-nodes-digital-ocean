@@ -49,6 +49,7 @@ _By the time users are looking for community nodes, they probably already know n
 **0.2.0** \
 Add support for Application images 
 Add support for Actions
+Add support for Domains
 
 **0.1.0** \
 Initial Release

@@ -15,6 +15,8 @@ import {
 	accountDescription,
 	actionDescription,
 	actionFields,
+	domainDescription,
+	domainFields,
 	dropletDescription,
 	dropletFields
 } from './Descriptions';
@@ -84,6 +86,10 @@ export class DigitalOcean implements INodeType {
 						value: 'action',
 					},
 					{
+						name: 'Domain',
+						value: 'domain',
+					},
+					{
 						name: 'Droplet',
 						value: 'droplet',
 					},
@@ -93,6 +99,8 @@ export class DigitalOcean implements INodeType {
 			...accountDescription,
 			...actionDescription,
 			...actionFields,
+			...domainDescription,
+			...domainFields,
 			...dropletDescription,
 			...dropletFields,
 		],
@@ -262,6 +270,52 @@ export class DigitalOcean implements INodeType {
 								responseData = responseData.actions;
 							}
 						}
+					}
+
+				}
+
+				if (resource === 'domain') {
+					if (operation === 'get') {
+						const domainName = this.getNodeParameter('domainName', itemIndex) as number;
+
+						responseData = await digitalOceanApiRequest.call(this, 'GET', `domains/${domainName}`);
+						responseData = responseData.domain;
+					}
+					if (operation === 'getMany') {
+						const returnAll = this.getNodeParameter('returnAll', itemIndex) as boolean;
+						const qs: IDataObject = {};
+
+						if (returnAll) {
+							responseData = await digitalOceanApiRequestAllItems.call(this, 'domains', 'GET', 'domains', {}, qs);
+						} else {
+							const limit = this.getNodeParameter('limit', itemIndex) as number;
+							qs.limit = limit;
+							// Allow more than the 200 items default limit
+							if (limit >= 200) {
+								responseData = await digitalOceanApiRequestAllItems.call(this, 'domains', 'GET', 'domains', {}, qs);
+							} else {
+								responseData = await digitalOceanApiRequest.call(this, 'GET', 'domains', {}, qs);
+								responseData = responseData.domains;
+							}
+						}
+					}
+					if (operation === 'delete') {
+						const domainName = this.getNodeParameter('domainName', itemIndex) as number;
+
+						responseData = await digitalOceanApiRequest.call(this, 'DELETE', `domains/${domainName}`);
+						responseData = { success: true };
+					}
+					if (operation === 'create') {
+						const domainName = this.getNodeParameter('domainName', itemIndex) as number;
+						const ipAddress = this.getNodeParameter('ipAddress', itemIndex) as number;
+
+						const body: IDataObject = {
+							name: domainName,
+							ip_address: ipAddress,
+						};
+
+						responseData = await digitalOceanApiRequest.call(this, 'POST', `domains`, body);
+						responseData = responseData.domain
 					}
 
 				}
