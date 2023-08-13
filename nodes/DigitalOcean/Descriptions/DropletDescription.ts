@@ -13,16 +13,10 @@ export const dropletDescription: INodeProperties[] = [
 		},
 		options: [
 			{
-				name: 'Get',
-				value: 'get',
-				description: 'Get information about a droplet',
-				action: 'Get information about a droplet',
-			},
-			{
-				name: 'Get Many',
-				value: 'getMany',
-				description: 'Get information about many droplets',
-				action: 'Get information about all droplets',
+				name: 'Action',
+				value: 'action',
+				description: 'Perform an action on a droplet',
+				action: 'Perform an action on a droplet',
 			},
 			{
 				name: 'Create',
@@ -36,6 +30,30 @@ export const dropletDescription: INodeProperties[] = [
 				description: 'Delete a droplet',
 				action: 'Delete a droplet',
 			},
+			{
+				name: 'Get',
+				value: 'get',
+				description: 'Get information about a droplet',
+				action: 'Get information about a droplet',
+			},
+			{
+				name: 'Get Backups',
+				value: 'getBackups',
+				description: 'Get all backups for a droplet',
+				action: 'Get all backups for a droplet',
+			},
+			{
+				name: 'Get Many',
+				value: 'getMany',
+				description: 'Get information about many droplets',
+				action: 'Get information about all droplets',
+			},
+			{
+				name: 'Get Snapshots',
+				value: 'getSnapshots',
+				description: 'Get all snapshots for a droplet',
+				action: 'Get all snapshots for a droplet',
+			},
 		],
 		default: 'getMany',
 	},
@@ -43,12 +61,12 @@ export const dropletDescription: INodeProperties[] = [
 
 export const dropletFields: INodeProperties[] = [
 	// ----------------------------------
-	//         droplet: get
+	//         droplet: shared
 	// ----------------------------------
 	{
 		displayName: 'Droplet Name or ID',
 		name: 'dropletId',
-		description: 'Name of the droplet to retrieve. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code-examples/expressions/">expression</a>.',
+		description: 'Name of the droplet operate on. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code-examples/expressions/">expression</a>.',
 		type: 'options',
 		typeOptions: {
 			loadOptionsMethod: 'getDroplets',
@@ -57,7 +75,7 @@ export const dropletFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['droplet'],
-				operation: ['get'],
+				operation: ['action', 'get', 'getBackups', 'delete', 'getSnapshots'],
 			},
 		},
 		default: '',
@@ -72,7 +90,7 @@ export const dropletFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['droplet'],
-				operation: ['getMany'],
+				operation: ['getMany', 'getBackups', 'getSnapshots'],
 			},
 		},
 		default: false,
@@ -85,7 +103,7 @@ export const dropletFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['droplet'],
-				operation: ['getMany'],
+				operation: ['getMany', 'getBackups', 'getSnapshots'],
 				returnAll: [false],
 			},
 		},
@@ -123,26 +141,6 @@ export const dropletFields: INodeProperties[] = [
 				default: '',
 			},
 		],
-	},
-	// ----------------------------------
-	//         droplet: delete
-	// ----------------------------------
-	{
-		displayName: 'Droplet Name or ID',
-		name: 'dropletId',
-		description: 'Name of the droplet to delete. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code-examples/expressions/">expression</a>.',
-		type: 'options',
-		typeOptions: {
-			loadOptionsMethod: 'getDroplets',
-		},
-		required: true,
-		displayOptions: {
-			show: {
-				resource: ['droplet'],
-				operation: ['delete'],
-			},
-		},
-		default: '',
 	},
 	// ----------------------------------
 	//         droplet: create
@@ -295,5 +293,116 @@ export const dropletFields: INodeProperties[] = [
 				default: [],
 			},
 		],
+	},
+	// ----------------------------------
+	//         droplet: action
+	// ----------------------------------
+	{
+		displayName: 'Action to Perform',
+		name: 'action',
+		type: 'options',
+		options: [
+			{
+				name: 'Disable Backups',
+				value: 'disable_backups',
+				description: 'Disable backups for the droplet',
+				action: 'Disable backups for a droplet',
+			},
+			{
+				name: 'Enable Backups',
+				value: 'enable_backups',
+				description: 'Enable backups for the droplet',
+				action: 'Enable backups for a droplet',
+			},
+			{
+				name: 'Enable IPv6',
+				value: 'enable_ipv6',
+				description: 'Enable IPv6 for the droplet',
+				action: 'Enable ipv6 for a droplet',
+			},
+			{
+				name: 'Password Reset',
+				value: 'password_reset',
+				description: 'Reset the password for the droplet',
+				action: 'Reset the password for a droplet',
+			},
+			{
+				name: 'Power Cycle',
+				value: 'power_cycle',
+				description: 'Power cycle the droplet',
+				action: 'Power cycle a droplet',
+			},
+			{
+				name: 'Power Off',
+				value: 'power_off',
+				description: 'Power off the droplet',
+				action: 'Power off a droplet',
+			},
+			{
+				name: 'Power On',
+				value: 'power_on',
+				description: 'Power on the droplet',
+				action: 'Power on a droplet',
+			},
+			{
+				name: 'Reboot',
+				value: 'reboot',
+				description: 'Reboot the droplet',
+				action: 'Reboot a droplet',
+			},
+			{
+				name: 'Rename',
+				value: 'rename',
+				description: 'Rename the droplet',
+				action: 'Rename a droplet',
+			},
+			{
+				name: 'Shutdown',
+				value: 'shutdown',
+				description: 'Shutdown the droplet',
+				action: 'Shutdown a droplet',
+			},
+			{
+				name: 'Snapshot',
+				value: 'snapshot',
+				description: 'Create a snapshot of the droplet',
+				action: 'Snapshot a droplet',
+			},
+		],
+		default: 'power_cycle',
+		displayOptions: {
+			show: {
+				resource: ['droplet'],
+				operation: ['action'],
+			},
+		},
+	},
+	{
+		displayName: 'Snapshot Name',
+		name: 'snapshotName',
+		description: 'Name of the snapshot to create',
+		type: 'string',
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['droplet'],
+				operation: ['action'],
+				action: ['snapshot'],
+			},
+		},
+	},
+	{
+		displayName: 'Droplet Name',
+		name: 'dropletName',
+		description: 'New name of the droplet',
+		type: 'string',
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['droplet'],
+				operation: ['action'],
+				action: ['rename'],
+			},
+		},
 	},
 ];

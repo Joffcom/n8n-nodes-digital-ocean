@@ -48,8 +48,10 @@ _By the time users are looking for community nodes, they probably already know n
 
 **0.2.0** \
 Add support for Application images 
-Add support for Actions
+Add support for Actions as Events
 Add support for Domains
+Add support for Droplet actions
+Add option to get Droplet Snapshots and Backups
 
 **0.1.0** \
 Initial Release

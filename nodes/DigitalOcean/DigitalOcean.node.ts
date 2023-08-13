@@ -13,8 +13,8 @@ import { NodeOperationError } from 'n8n-workflow';
 import { digitalOceanApiRequest, digitalOceanApiRequestAllItems } from './GenericFunctions';
 import {
 	accountDescription,
-	actionDescription,
-	actionFields,
+	eventDescription,
+	eventFields,
 	domainDescription,
 	domainFields,
 	dropletDescription,
@@ -82,10 +82,6 @@ export class DigitalOcean implements INodeType {
 						value: 'account',
 					},
 					{
-						name: 'Action',
-						value: 'action',
-					},
-					{
 						name: 'Domain',
 						value: 'domain',
 					},
@@ -93,12 +89,16 @@ export class DigitalOcean implements INodeType {
 						name: 'Droplet',
 						value: 'droplet',
 					},
+					{
+						name: 'Event',
+						value: 'event',
+					},
 				],
 				default: 'account',
 			},
 			...accountDescription,
-			...actionDescription,
-			...actionFields,
+			...eventDescription,
+			...eventFields,
 			...domainDescription,
 			...domainFields,
 			...dropletDescription,
@@ -246,9 +246,9 @@ export class DigitalOcean implements INodeType {
 					}
 				}
 
-				if (resource === 'action') {
+				if (resource === 'event') {
 					if (operation === 'get') {
-						const actionId = this.getNodeParameter('actionId', itemIndex) as number;
+						const actionId = this.getNodeParameter('eventId', itemIndex) as number;
 
 						responseData = await digitalOceanApiRequest.call(this, 'GET', `actions/${actionId}`);
 						responseData = responseData.action;
@@ -321,6 +321,27 @@ export class DigitalOcean implements INodeType {
 				}
 
 				if (resource === 'droplet') {
+					if (operation === 'action') {
+						const dropletId = this.getNodeParameter('dropletId', itemIndex) as number;
+						const action = this.getNodeParameter('action', itemIndex) as string;
+
+						const body: IDataObject = {
+							type: action,
+						};
+
+						if (action === 'snapshot') {
+							const snapshotName = this.getNodeParameter('snapshotName', itemIndex) as string;
+							body.name = snapshotName;
+						}
+
+						if (action === 'rename') {
+							const name = this.getNodeParameter('dropletName', itemIndex) as string;
+							body.name = name;
+						}
+
+						responseData = await digitalOceanApiRequest.call(this, 'POST', `droplets/${dropletId}/actions`, body);
+						responseData = responseData.action;
+					}
 					if (operation === 'get') {
 						const dropletId = this.getNodeParameter('dropletId', itemIndex) as number;
 
@@ -357,6 +378,45 @@ export class DigitalOcean implements INodeType {
 							} else {
 								responseData = await digitalOceanApiRequest.call(this, 'GET', 'droplets', {}, qs);
 								responseData = responseData.droplets;
+							}
+						}
+					}
+					if (operation === 'getBackups') {
+						const returnAll = this.getNodeParameter('returnAll', itemIndex) as boolean;
+						const dropletId = this.getNodeParameter('dropletId', itemIndex) as number;
+						const qs: IDataObject = {};
+
+						if (returnAll) {
+							responseData = await digitalOceanApiRequestAllItems.call(this, 'backups', 'GET', `droplets/${dropletId}/backups`, {}, qs);
+						} else {
+							const limit = this.getNodeParameter('limit', itemIndex) as number;
+							qs.limit = limit;
+							// Allow more than the 200 items default limit
+							if (limit >= 200) {
+								responseData = await digitalOceanApiRequestAllItems.call(this, 'backups', 'GET', `droplets/${dropletId}/backups`, {}, qs);
+							} else {
+								responseData = await digitalOceanApiRequest.call(this, 'GET', `droplets/${dropletId}/backups`, {}, qs);
+								responseData = responseData.backups;
+							}
+						}
+					}
+
+					if (operation === 'getSnapshots') {
+						const returnAll = this.getNodeParameter('returnAll', itemIndex) as boolean;
+						const dropletId = this.getNodeParameter('dropletId', itemIndex) as number;
+						const qs: IDataObject = {};
+
+						if (returnAll) {
+							responseData = await digitalOceanApiRequestAllItems.call(this, 'snapshots', 'GET', `droplets/${dropletId}/snapshots`, {}, qs);
+						} else {
+							const limit = this.getNodeParameter('limit', itemIndex) as number;
+							qs.limit = limit;
+							// Allow more than the 200 items default limit
+							if (limit >= 200) {
+								responseData = await digitalOceanApiRequestAllItems.call(this, 'snapshots', 'GET', `droplets/${dropletId}/snapshots`, {}, qs);
+							} else {
+								responseData = await digitalOceanApiRequest.call(this, 'GET', `droplets/${dropletId}/snapshots`, {}, qs);
+								responseData = responseData.snapshots;
 							}
 						}
 					}

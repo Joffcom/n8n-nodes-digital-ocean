@@ -1,6 +1,6 @@
 import type { INodeProperties } from 'n8n-workflow';
 
-export const actionDescription: INodeProperties[] = [
+export const eventDescription: INodeProperties[] = [
 	{
 		displayName: 'Operation',
 		name: 'operation',
@@ -8,47 +8,47 @@ export const actionDescription: INodeProperties[] = [
 		noDataExpression: true,
 		displayOptions: {
 			show: {
-				resource: ['action'],
+				resource: ['event'],
 			},
 		},
 		options: [
 			{
 				name: 'Get',
 				value: 'get',
-				description: 'Get action information',
-				action: 'Get action information',
+				description: 'Get event information',
+				action: 'Get event information',
 			},
 			{
 				name: 'Get Many',
 				value: 'getMany',
-				description: 'Get information about many actions',
-				action: 'Get information about many actions',
+				description: 'Get information about many events',
+				action: 'Get information about many events',
 			},
 		],
 		default: 'get',
 	},
 ];
 
-export const actionFields: INodeProperties[] = [
+export const eventFields: INodeProperties[] = [
 	// ----------------------------------
-	//         action: get
+	//         event: get
 	// ----------------------------------
 	{
-		displayName: 'Action ID',
-		name: 'actionId',
-		description: 'ID of the action to get',
+		displayName: 'Event ID',
+		name: 'eventId',
+		description: 'ID of the event to get',
 		type: 'number',
 		required: true,
 		displayOptions: {
 			show: {
-				resource: ['action'],
+				resource: ['event'],
 				operation: ['get'],
 			},
 		},
 		default: 0,
 	},
 	// ----------------------------------
-	//         action: getMany
+	//         event: getMany
 	// ----------------------------------
 	{
 		displayName: 'Return All',
@@ -56,7 +56,7 @@ export const actionFields: INodeProperties[] = [
 		type: 'boolean',
 		displayOptions: {
 			show: {
-				resource: ['action'],
+				resource: ['event'],
 				operation: ['getMany'],
 			},
 		},
@@ -69,7 +69,7 @@ export const actionFields: INodeProperties[] = [
 		type: 'number',
 		displayOptions: {
 			show: {
-				resource: ['action'],
+				resource: ['event'],
 				operation: ['getMany'],
 				returnAll: [false],
 			},
