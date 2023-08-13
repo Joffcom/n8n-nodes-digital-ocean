@@ -162,18 +162,50 @@ export const dropletFields: INodeProperties[] = [
 		default: '',
 	},
 	{
-		displayName: 'Image Name or ID',
-		name: 'image',
-		description: 'Image to use for the droplet. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code-examples/expressions/">expression</a>.',
+		displayName: 'Use Application Image',
+		name: 'useApplicationImage',
+		description: 'Whether to use an application image or a distribution image',
+		type: 'boolean',
+		default: false,
+		displayOptions: {
+			show: {
+				resource: ['droplet'],
+				operation: ['create'],
+			},
+		},
+	},
+	{
+		displayName: 'Application Image Name or ID',
+		name: 'applicationImage',
+		description: 'Application image to use for the droplet. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code-examples/expressions/">expression</a>.',
 		type: 'options',
 		typeOptions: {
-			loadOptionsMethod: 'getImages',
+			loadOptionsMethod: 'getAppImages',
 		},
 		required: true,
 		displayOptions: {
 			show: {
 				resource: ['droplet'],
 				operation: ['create'],
+				useApplicationImage: [true],
+			},
+		},
+		default: '',
+	},
+	{
+		displayName: 'Image Name or ID',
+		name: 'image',
+		description: 'Image to use for the droplet. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code-examples/expressions/">expression</a>.',
+		type: 'options',
+		typeOptions: {
+			loadOptionsMethod: 'getDistributionImages',
+		},
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['droplet'],
+				operation: ['create'],
+				useApplicationImage: [false],
 			},
 		},
 		default: '',

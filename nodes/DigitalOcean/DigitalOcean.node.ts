@@ -106,9 +106,25 @@ export class DigitalOcean implements INodeType {
 				return returnData;
 			},
 			// Get Images
-			async getImages(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+			async getDistributionImages(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 				const returnData: INodePropertyOptions[] = [];
 				const dropletImages = await digitalOceanApiRequestAllItems.call(this, 'images', 'GET', 'images?type=distribution');
+
+				for (const dropletImage of dropletImages) {
+					const dropletImageName = dropletImage.name;
+					const dropletImageId = dropletImage.id;
+
+					returnData.push({
+						name: dropletImageName,
+						value: dropletImageId,
+					});
+				}
+
+				return returnData;
+			},
+			async getAppImages(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				const dropletImages = await digitalOceanApiRequestAllItems.call(this, 'images', 'GET', 'images?type=application');
 
 				for (const dropletImage of dropletImages) {
 					const dropletImageName = dropletImage.name;
@@ -260,8 +276,15 @@ export class DigitalOcean implements INodeType {
 					if (operation === 'create') {
 						const name = this.getNodeParameter('name', itemIndex) as string;
 						const size = this.getNodeParameter('size', itemIndex) as string;
-						const image = this.getNodeParameter('image', itemIndex) as string;
+						const useApplicationImage = this.getNodeParameter('useApplicationImage', itemIndex) as boolean;
 						const additionalFields = this.getNodeParameter('additionalFields', itemIndex) as IDataObject;
+
+						let image = '';
+						if (useApplicationImage) {
+							image = this.getNodeParameter('applicationImage', itemIndex) as string;
+						} else {
+							image = this.getNodeParameter('image', itemIndex) as string;
+						}
 
 						const body: IDataObject = {
 							name,
