@@ -90,9 +90,15 @@ This node will work with any version of n8n after `1.62.1`
 
 ## Version history
 
-**0.3.0** \
+**0.4.1** \
+Fix descriptions
+
+**0.4.0** \
 Add support for AI tools
 Update documentation
+
+**0.3.0** \
+Prevent node from loading n8n again
 
 **0.2.0** \
 Add support for Application images  

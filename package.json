@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-digital-ocean",
-  "version": "0.3.0",
+  "version": "0.4.1",
   "description": "n8n community node to work with the Digital Ocean API",
   "keywords": [
     "n8n-community-node-package",
