@@ -1,6 +1,6 @@
 # n8n-nodes-digital-ocean
 
-This is an n8n community node. It lets you use Digital Ocean in your n8n workflows.
+This is an n8n community node for connecting to Digital Oceans API to manage your droplets.
 
 [n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform.
 
@@ -19,32 +19,80 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 ## Operations
 - Account
 	- Get
+- Domain
+	- Create
+	- Get
+	- Get Many
+	- Delete
 - Droplet
 	- Get
 	- Get Many
 	- Create
 	- Delete
+- Event 
+	- Get
+	- Get Many
 
 ## Credentials
 
-This node supports both OAuth2 and Access Key
+This node supports both OAuth2 and Access Key.
+
+[OAuth 2](https://docs.digitalocean.com/reference/api/oauth/)
+[Access Key](https://docs.digitalocean.com/reference/api/create-personal-access-token/)
 
 ## Compatibility
 
-_State the minimum n8n version, as well as which versions you test against. You can also include any known version incompatibility issues._
+This node will work with any version of n8n after `1.62.1`
 
 ## Usage
 
-_This is an optional section. Use it to help users with any difficult or confusing aspects of the node._
+### Authentication
+1. Create new credentials in n8n and select "Digital Ocean API"
+2. Choose either OAuth2 or Access Key authentication:
+   - For OAuth2: Click the "Connect" button and authorize n8n
+   - For Access Key: Generate a [personal access token](https://cloud.digitalocean.com/account/api/tokens) and paste it in
 
-_By the time users are looking for community nodes, they probably already know n8n basics. But if you expect new users, you can link to the [Try it out](https://docs.n8n.io/try-it-out/) documentation to help them get started._
+### Working with Droplets
+- To get information about a specific droplet:
+  1. Add the Digital Ocean node
+  2. Select "Droplet" as Resource
+  3. Choose "Get" as Operation
+  4. Enter the Droplet ID
+
+- To create a new droplet:
+  1. Add the Digital Ocean node
+  2. Select "Droplet" as Resource
+  3. Choose "Create" as Operation
+  4. Configure required fields:
+     - Name
+     - Region
+     - Size
+     - Image
+
+### Managing Domains
+- To create a new domain:
+  1. Add the Digital Ocean node
+  2. Select "Domain" as Resource
+  3. Choose "Create" as Operation
+  4. Enter the domain name
+  5. Optionally configure IP address
+
+### Monitoring Events
+- To track operations on your account:
+  1. Add the Digital Ocean node
+  2. Select "Event" as Resource
+  3. Choose "Get Many" as Operation
+  4. Optionally filter by event type
 
 ## Resources
 
 * [n8n community nodes documentation](https://docs.n8n.io/integrations/community-nodes/)
-* _Link to app/service documentation._
 
 ## Version history
+
+**0.3.0** \
+Add support for AI tools
+Update documentation
 
 **0.2.0** \
 Add support for Application images  

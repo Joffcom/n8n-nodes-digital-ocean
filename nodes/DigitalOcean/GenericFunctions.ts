@@ -1,16 +1,16 @@
-import type { OptionsWithUri } from 'request';
-
 import type {
 	IDataObject,
 	IExecuteFunctions,
 	IExecuteSingleFunctions,
 	IHookFunctions,
+	IHttpRequestMethods,
+	IHttpRequestOptions,
 	ILoadOptionsFunctions,
 } from 'n8n-workflow';
 
 export async function digitalOceanApiRequest(
 	this: IHookFunctions | IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions,
-	method: string,
+	method: IHttpRequestMethods,
 	resource: string,
 	body: any = {},
 	qs: IDataObject = {},
@@ -19,11 +19,11 @@ export async function digitalOceanApiRequest(
 ) {
 	const authenticationMethod = this.getNodeParameter('authentication', 0);
 
-	let options: OptionsWithUri = {
-		method,
+	let options: IHttpRequestOptions = {
+		method: method,
 		qs,
 		body,
-		uri: uri || `https://api.digitalocean.com/v2/${resource}`,
+		url: uri || `https://api.digitalocean.com/v2/${resource}`,
 		json: true,
 	};
 
@@ -34,13 +34,13 @@ export async function digitalOceanApiRequest(
 
 	const credentialType = authenticationMethod === 'accessToken' ? 'digitalOceanApi' : 'digitalOceanOAuth2Api';
 
-	return this.helpers.requestWithAuthentication.call(this, credentialType, options);
+	return this.helpers.httpRequestWithAuthentication.call(this, credentialType, options);
 }
 
 export async function digitalOceanApiRequestAllItems(
 	this: IHookFunctions | IExecuteFunctions | ILoadOptionsFunctions,
 	propertyName: string,
-	method: string,
+	method: IHttpRequestMethods,
 	resource: string,
 	body: any = {},
 	query: IDataObject = {},
