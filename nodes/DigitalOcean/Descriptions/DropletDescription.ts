@@ -66,7 +66,7 @@ export const dropletFields: INodeProperties[] = [
 	{
 		displayName: 'Droplet Name or ID',
 		name: 'dropletId',
-		description: 'Name of the droplet operate on. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code-examples/expressions/">expression</a>.',
+		description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 		type: 'options',
 		typeOptions: {
 			loadOptionsMethod: 'getDroplets',
@@ -175,7 +175,7 @@ export const dropletFields: INodeProperties[] = [
 	{
 		displayName: 'Application Image Name or ID',
 		name: 'applicationImage',
-		description: 'Application image to use for the droplet. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code-examples/expressions/">expression</a>.',
+		description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 		type: 'options',
 		typeOptions: {
 			loadOptionsMethod: 'getAppImages',
@@ -193,7 +193,7 @@ export const dropletFields: INodeProperties[] = [
 	{
 		displayName: 'Image Name or ID',
 		name: 'image',
-		description: 'Image to use for the droplet. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code-examples/expressions/">expression</a>.',
+		description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 		type: 'options',
 		typeOptions: {
 			loadOptionsMethod: 'getDistributionImages',
@@ -211,7 +211,7 @@ export const dropletFields: INodeProperties[] = [
 	{
 		displayName: 'Size Name or ID',
 		name: 'size',
-		description: 'Size of the droplet. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code-examples/expressions/">expression</a>.',
+		description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 		type: 'options',
 		typeOptions: {
 			loadOptionsMethod: 'getSizes',
@@ -262,7 +262,7 @@ export const dropletFields: INodeProperties[] = [
 			{
 				displayName: 'Region Name or ID',
 				name: 'region',
-				description: 'Region to create the droplet in. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code-examples/expressions/">expression</a>.',
+				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				type: 'options',
 				typeOptions: {
 					loadOptionsMethod: 'getRegions',
@@ -273,7 +273,7 @@ export const dropletFields: INodeProperties[] = [
 				// eslint-disable-next-line n8n-nodes-base/node-param-display-name-wrong-for-dynamic-multi-options
 				displayName: 'SSH Keys',
 				name: 'sshKeys',
-				description: 'SSH keys to add to the droplet. Multiple keys can be separated by comma. Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code-examples/expressions/">expression</a>.',
+				description: 'Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				type: 'multiOptions',
 				typeOptions: {
 					loadOptionsMethod: 'getSSHKeys',
