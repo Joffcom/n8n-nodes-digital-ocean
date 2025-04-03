@@ -8,6 +8,8 @@ import {
 export class DigitalOceanApi implements ICredentialType {
 	name = 'digitalOceanApi';
 	displayName = 'Digital Ocean API';
+	// eslint-disable-next-line n8n-nodes-base/cred-class-field-documentation-url-miscased
+	documentationUrl = 'https://www.npmjs.com/package/n8n-nodes-digital-ocean';
 	properties: INodeProperties[] = [
 		{
 			displayName: 'Access Token',

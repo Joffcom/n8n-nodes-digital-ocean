@@ -8,7 +8,7 @@ import type {
 	INodePropertyOptions,
 } from 'n8n-workflow';
 
-import { NodeOperationError } from 'n8n-workflow';
+import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
 
 import { digitalOceanApiRequest, digitalOceanApiRequestAllItems } from './GenericFunctions';
 import {
@@ -29,11 +29,12 @@ export class DigitalOcean implements INodeType {
 		icon: 'file:digitalocean.svg',
 		version: 1,
 		description: 'Digital Ocean',
+		usableAsTool: true,
 		defaults: {
 			name: 'Digital Ocean',
 		},
-		inputs: ['main'],
-		outputs: ['main'],
+		inputs: [NodeConnectionType.Main],
+		outputs: [NodeConnectionType.Main],
 		credentials: [
 			{
 				name: 'digitalOceanApi',
